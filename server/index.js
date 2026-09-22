@@ -45,6 +45,35 @@ app.get('/api/tickets', (req, res) => {
     res.json(tickets)
 })
 
+app.post('/api/tickets', (req, res) => {
+    const { title, priority = 'Medium' } = req.body
+
+    if (typeof title !== 'string' || !title.trim()) {
+        return res.status(400).json({
+            error: 'Ticket title is required',
+        })
+    }
+
+    const allowedPriorities = ['Low', 'Medium', 'High']
+
+    if (!allowedPriorities.includes(priority)) {
+        return res.status(400).json({
+            error: 'Invalid priority',
+        })
+    }
+
+    const newTicket = {
+        id: Math.max(0, ...tickets.map((ticket) => ticket.id)) + 1,
+        title: title.trim(),
+        priority: priority,
+        status: 'Open',
+    }
+
+    tickets.push(newTicket)
+
+    res.status(201).json(newTicket)
+})
+
 app.listen(PORT, () => {
     console.log(`HelpDesk API running on http://localhost:${PORT}`)
 
