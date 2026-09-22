@@ -1,54 +1,53 @@
+import { useEffect, useState } from 'react'
 import './App.css'
 
-const tickets = [
-  {
-    id: 1042,
-    title: 'VPN not connecting',
-    priority: 'High',
-    status: 'Open',
-  },
-  {
-    id: 1041,
-    title: 'Password reset',
-    priority: 'Medium',
-    status: 'In Progress',
-  },
-  {
-    id: 1040,
-    title: 'Monitor not detected',
-    priority: 'Low',
-    status: 'Resolved',
-  },
-  {
-    id: 1039,
-    title: 'Outlook not opening',
-    priority: 'High',
-    status: 'Open',
-  },
-]
-
 function App() {
+	const [tickets, setTickets] = useState([])
+
+	useEffect(() => {
+		fetch('http://localhost:3000/api/tickets')
+			.then((response) => response.json())
+			.then((data) => {
+				setTickets(data)
+			})
+			.catch((error) => {
+				console.error('Error fetching tickets:', error)
+			})
+	}, [])
+
+	const openTickets = tickets.filter(
+		(ticket) => ticket.status === 'Open'
+	).length
+
+	const inProgressTickets = tickets.filter(
+		(ticket) => ticket.status === 'In Progress'
+	).length
+
+	const resolvedTickets = tickets.filter(
+		(ticket) => ticket.status === 'Resolved'
+	).length
+
 	return (
-		<div className="dashboard"> 
+		<div className="dashboard">
 			<h1>HelpDesk</h1>
 			<p className="subtitle">IT Support Dashboard</p>
-			
+
 			<div className="stats">
 				<div className="card">
 					<h3>Open Tickets</h3>
-					<p>12</p>
-				 </div>
+					<p>{openTickets}</p>
+				</div>
 
 				<div className="card">
 					<h3>In Progress</h3>
-					<p>5</p>
+					<p>{inProgressTickets}</p>
 				</div>
 
 				<div className="card">
 					<h3>Resolved</h3>
-					<p>38</p>
+					<p>{resolvedTickets}</p>
 				</div>
-			 </div>
+			</div>
 
 			<div className="tickets-section">
 				<h2>Recent Tickets</h2>
@@ -60,7 +59,7 @@ function App() {
 							<th>Issue</th>
 							<th>Priority</th>
 							<th>Status</th>
-						 </tr>
+						</tr>
 					</thead>
 
 					<tbody>
@@ -70,19 +69,19 @@ function App() {
 								<td>{ticket.title}</td>
 
 								<td>
-								  <span className={`badge ${ticket.priority.toLowerCase()}`}>
-   									 {ticket.priority}
-								  </span>
+									<span className={`badge ${ticket.priority.toLowerCase()}`}>
+										{ticket.priority}
+									</span>
 								</td>
 
 								<td>
-  								 <span
-   									className={`badge status-${ticket.status
-     									 .toLowerCase()
-     									 .replace(' ', '-')}`}
-  								>
-   									{ticket.status}
-  								 </span>
+									<span
+										className={`badge status-${ticket.status
+											.toLowerCase()
+											.replace(' ', '-')}`}
+									>
+										{ticket.status}
+									</span>
 								</td>
 							</tr>
 						))}
